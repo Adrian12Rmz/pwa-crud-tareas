@@ -3,13 +3,29 @@
   "short_name": "Tareas PWA",
   "start_url": "/pwa-crud-tareas/index.html",
   "display": "standalone",
-  "background_color": "#f4f4f9",
+  "background_color": "#ffffff",
   "theme_color": "#28a745",
+  "description": "Aplicación CRUD de tareas con funcionalidad offline",
   "icons": [
     {
-      "src": "icon.png",
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot-desktop.png",
+      "sizes": "1280x800",
+      "type": "image/png",
+      "form_factor": "wide"
     }
   ]
 }
