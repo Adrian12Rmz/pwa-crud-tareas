@@ -33,18 +33,17 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function addTask(text) {
-    const tasks = getTasks();
-    const newTask = {
-      id: Date.now(),
-      text: text,
-      completed: false,
-      createdAt: new Date().toISOString()
-    };
-    tasks.push(newTask);
-    saveTasks(tasks);
-    renderTasks();
-    showToast('Tarea añadida ✅');
-  }
+  const tasks = getTasks();
+  const newTask = {
+    id: Date.now(),
+    text: text,
+    completed: false
+  };
+  tasks.push(newTask);
+  saveTasks(tasks);
+  renderTasks();
+  window.location.reload(); // Fuerza actualización
+}
 
   function editTask(id) {
     const task = getTasks().find(t => t.id === id);
