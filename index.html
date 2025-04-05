@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CRUD de Tareas PWA</title>
-  <link rel="stylesheet" href="style.css?v=3">
+  <link rel="stylesheet" href="style.css?v=2">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#28a745">
 </head>
@@ -20,17 +20,28 @@
     <ul id="task-list"></ul>
   </div>
 
-  <script src="app.js?v=3"></script>
+  <script src="app.js?v=2"></script>
   <script>
+    // Registro mejorado del Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/pwa-crud-tareas/sw.js')
-          .then(registration => {
-            console.log('SW registrado correctamente');
-            registration.update(); // Fuerza actualización del SW
+        navigator.serviceWorker.register('./sw.js', { scope: './' })
+          .then(reg => {
+            console.log('SW registrado con éxito:', reg);
+            reg.update();
+            // Forzar actualización inmediata
+            if (!navigator.serviceWorker.controller) {
+              window.location.reload();
+            }
           })
           .catch(err => console.error('Error al registrar SW:', err));
       });
+    }
+
+    // Verificar persistencia de almacenamiento
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist()
+        .then(granted => console.log('Persistencia:', granted ? 'Garantizada' : 'No garantizada'));
     }
   </script>
 </body>
