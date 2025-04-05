@@ -1,5 +1,5 @@
 // Configuración inicial
-const DB_NAME = 'pwa-tasks-db-v2';
+const DB_NAME = 'tasks-db-v3';
 let editMode = false;
 let currentTaskId = null;
 
@@ -12,11 +12,8 @@ document.addEventListener('DOMContentLoaded', () => {
   // Cargar tareas al iniciar
   loadTasks();
 
-  // Manejar envío del formulario
-  taskForm.addEventListener('submit', handleSubmit);
-
-  // Funciones CRUD
-  function handleSubmit(e) {
+  // Manejar formulario
+  taskForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const taskText = taskInput.value.trim();
     
@@ -28,22 +25,23 @@ document.addEventListener('DOMContentLoaded', () => {
         addTask(taskText);
       }
       taskInput.value = '';
-      taskInput.focus();
     }
-  }
+  });
 
+  // Funciones CRUD
   function addTask(text) {
-  const tasks = getTasks();
-  const newTask = {
-    id: Date.now(),
-    text: text,
-    completed: false
-  };
-  tasks.push(newTask);
-  saveTasks(tasks);
-  renderTasks();
-  window.location.reload(); // Fuerza actualización
-}
+    const tasks = getTasks();
+    const newTask = {
+      id: Date.now(),
+      text: text,
+      completed: false,
+      createdAt: new Date().toISOString()
+    };
+    tasks.push(newTask);
+    saveTasks(tasks);
+    renderTasks();
+    showToast('Tarea añadida');
+  }
 
   function editTask(id) {
     const task = getTasks().find(t => t.id === id);
@@ -51,9 +49,8 @@ document.addEventListener('DOMContentLoaded', () => {
       taskInput.value = task.text;
       editMode = true;
       currentTaskId = id;
-      submitBtn.textContent = '✏️ Actualizar';
+      submitBtn.textContent = '🔄 Actualizar';
       highlightTask(id);
-      taskInput.focus();
     }
   }
 
@@ -62,24 +59,21 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskIndex = tasks.findIndex(t => t.id === id);
     
     if (taskIndex !== -1) {
-      tasks[taskIndex] = { 
-        ...tasks[taskIndex], 
-        text: newText,
-        updatedAt: new Date().toISOString()
-      };
+      tasks[taskIndex].text = newText;
+      tasks[taskIndex].updatedAt = new Date().toISOString();
       saveTasks(tasks);
       renderTasks();
-      showToast('Tarea actualizada ✏️');
+      showToast('Tarea actualizada');
     }
   }
 
   function deleteTask(id) {
-    if (confirm('¿Eliminar esta tarea permanentemente?')) {
+    if (confirm('¿Eliminar esta tarea?')) {
       const tasks = getTasks().filter(t => t.id !== id);
       saveTasks(tasks);
       renderTasks();
       if (editMode && id === currentTaskId) exitEditMode();
-      showToast('Tarea eliminada 🗑️');
+      showToast('Tarea eliminada');
     }
   }
 
@@ -94,38 +88,45 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Helper functions
+  // Helpers
   function getTasks() {
-    const tasks = localStorage.getItem(DB_NAME);
-    return tasks ? JSON.parse(tasks) : [];
+    return JSON.parse(localStorage.getItem(DB_NAME)) || [];
   }
 
   function saveTasks(tasks) {
-  try {
-    localStorage.setItem('pwa-tasks-db-v2', JSON.stringify(tasks));
-    console.log('Tareas guardadas:', tasks); // Debug
-  } catch (error) {
-    console.error('Error al guardar:', error);
+    localStorage.setItem(DB_NAME, JSON.stringify(tasks));
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist();
+    }
   }
-}
 
   function renderTasks() {
+    taskList.innerHTML = '';
     const tasks = getTasks();
-    taskList.innerHTML = tasks.length === 0 
-      ? '<p class="empty-message">No hay tareas. ¡Agrega una!</p>'
-      : tasks.map(task => `
-          <li data-id="${task.id}" class="${task.completed ? 'completed' : ''}">
-            <div class="task-content">
-              <input type="checkbox" ${task.completed ? 'checked' : ''} 
-                     onchange="toggleComplete(${task.id})">
-              <span>${task.text}</span>
-            </div>
-            <div class="task-actions">
-              <button class="edit-btn" onclick="editTask(${task.id})">✏️</button>
-              <button class="delete-btn" onclick="deleteTask(${task.id})">🗑️</button>
-            </div>
-          </li>
-        `).join('');
+    
+    if (tasks.length === 0) {
+      taskList.innerHTML = '<p class="empty">No hay tareas</p>';
+      return;
+    }
+
+    tasks.forEach(task => {
+      const li = document.createElement('li');
+      li.dataset.id = task.id;
+      li.className = task.completed ? 'completed' : '';
+      
+      li.innerHTML = `
+        <div class="task-content">
+          <input type="checkbox" ${task.completed ? 'checked' : ''} 
+                 onchange="toggleComplete(${task.id})">
+          <span>${task.text}</span>
+        </div>
+        <div class="task-actions">
+          <button onclick="editTask(${task.id})">✏️</button>
+          <button onclick="deleteTask(${task.id})">🗑️</button>
+        </div>
+      `;
+      taskList.appendChild(li);
+    });
   }
 
   function highlightTask(id) {
@@ -149,12 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
     toast.textContent = message;
     document.body.appendChild(toast);
     
-    setTimeout(() => {
-      toast.classList.add('show');
-      setTimeout(() => {
-        toast.remove();
-      }, 3000);
-    }, 100);
+    setTimeout(() => toast.remove(), 2000);
   }
 
   // Hacer funciones globales
