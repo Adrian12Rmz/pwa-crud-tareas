@@ -6,22 +6,26 @@
   <title>CRUD de Tareas PWA</title>
   <link rel="stylesheet" href="styles.css">
   <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#28a745">
 </head>
 <body>
   <div class="container">
     <h1>📝 Mis Tareas</h1>
+    
     <form id="task-form">
-      <input type="text" id="task-input" placeholder="Nueva tarea..." required>
-      <button type="submit">➕ Añadir</button>
+      <input type="text" id="task-input" placeholder="Escribe una tarea..." required>
+      <button type="submit" id="submit-btn">➕ Añadir</button>
     </form>
+    
     <ul id="task-list"></ul>
   </div>
+
   <script src="app.js"></script>
   <script>
     // Registrar Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/pwa-crud-tareas/sw.js')  // ✅ Ruta absoluta
+        navigator.serviceWorker.register('/pwa-crud-tareas/sw.js')
           .then(registration => console.log('SW registrado!'))
           .catch(err => console.log('Error al registrar SW: ', err));
       });
