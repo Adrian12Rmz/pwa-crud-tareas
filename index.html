@@ -21,7 +21,7 @@
     // Registrar Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('sw.js')
+        navigator.serviceWorker.register('/pwa-crud-tareas/sw.js')  // ✅ Ruta absoluta
           .then(registration => console.log('SW registrado!'))
           .catch(err => console.log('Error al registrar SW: ', err));
       });
