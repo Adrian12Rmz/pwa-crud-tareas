@@ -31,11 +31,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const tasks = getTasks();
     const newTask = {
       id: Date.now(),
-      text: text
+      text: text,
+      completed: false,
+      createdAt: new Date().toISOString()
     };
     tasks.push(newTask);
     saveTasks(tasks);
     renderTasks();
+    alert('Tarea añadida correctamente');
   }
 
   // Editar tarea
@@ -43,75 +46,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const tasks = getTasks();
     const task = tasks.find(task => task.id === id);
     
-    taskInput.value = task.text;
-    taskInput.focus();
-    
-    editMode = true;
-    currentTaskId = id;
-    submitBtn.textContent = '✏️ Actualizar';
-    
-    // Resaltar tarea en edición
-    const allTasks = document.querySelectorAll('#task-list li');
-    allTasks.forEach(taskEl => {
-      if (parseInt(taskEl.dataset.id) === id) {
-        taskEl.classList.add('editing');
-      } else {
-        taskEl.classList.remove('editing');
-      }
-    });
+    if (task) {
+      taskInput.value = task.text;
+      taskInput.focus();
+      editMode = true;
+      currentTaskId = id;
+      submitBtn.textContent = '✏️ Actualizar';
+      highlightTask(id);
+    }
   }
 
   // Actualizar tarea
   function updateTask(id, newText) {
     const tasks = getTasks();
     const taskIndex = tasks.findIndex(task => task.id === id);
-    tasks[taskIndex].text = newText;
-    saveTasks(tasks);
-    renderTasks();
+    
+    if (taskIndex !== -1) {
+      tasks[taskIndex].text = newText;
+      tasks[taskIndex].updatedAt = new Date().toISOString();
+      saveTasks(tasks);
+      renderTasks();
+      alert('Tarea actualizada correctamente');
+    }
   }
 
   // Eliminar tarea
   function deleteTask(id) {
-    if (confirm('¿Eliminar esta tarea?')) {
+    if (confirm('¿Estás seguro de eliminar esta tarea?')) {
       const tasks = getTasks().filter(task => task.id !== id);
       saveTasks(tasks);
       renderTasks();
       if (editMode && id === currentTaskId) exitEditMode();
+      alert('Tarea eliminada correctamente');
     }
   }
 
-  // Salir del modo edición
-  function exitEditMode() {
-    editMode = false;
-    currentTaskId = null;
-    submitBtn.textContent = '➕ Añadir';
-    document.querySelectorAll('#task-list li').forEach(li => {
-      li.classList.remove('editing');
-    });
+  // Marcar tarea como completada
+  function toggleComplete(id) {
+    const tasks = getTasks();
+    const taskIndex = tasks.findIndex(task => task.id === id);
+    
+    if (taskIndex !== -1) {
+      tasks[taskIndex].completed = !tasks[taskIndex].completed;
+      saveTasks(tasks);
+      renderTasks();
+    }
   }
 
-  // Renderizar tareas
-  function renderTasks() {
-    taskList.innerHTML = '';
-    getTasks().forEach(task => {
-      const li = document.createElement('li');
-      li.dataset.id = task.id;
-      li.innerHTML = `
-        <span>${task.text}</span>
-        <div class="task-actions">
-          <button class="edit-btn" onclick="editTask(${task.id})">✏️</button>
-          <button class="delete-btn" onclick="deleteTask(${task.id})">🗑️</button>
-        </div>
-      `;
-      taskList.appendChild(li);
-    });
-  }
-
-  // Obtener tareas de localStorage
-  function getTasks() {
-    return JSON.parse(localStorage.getItem('tasks')) || [];
-  }
-
-  // Guardar tareas en localStorage
-  function saveTasks(tasks) {
-   
+  // Resaltar tarea en edición
+  function highlightTask(id) {
+    document.querySelectorAll('#task-list
