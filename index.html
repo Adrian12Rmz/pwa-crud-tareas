@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CRUD de Tareas PWA</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="manifest.json">
+</head>
+<body>
+  <div class="container">
+    <h1>📝 Mis Tareas</h1>
+    <form id="task-form">
+      <input type="text" id="task-input" placeholder="Nueva tarea..." required>
+      <button type="submit">➕ Añadir</button>
+    </form>
+    <ul id="task-list"></ul>
+  </div>
+  <script src="app.js"></script>
+  <script>
+    // Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+          .then(registration => console.log('SW registrado!'))
+          .catch(err => console.log('Error al registrar SW: ', err));
+      });
+    }
+  </script>
+</body>
+</html>
