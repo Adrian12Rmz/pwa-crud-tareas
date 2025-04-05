@@ -102,12 +102,13 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function saveTasks(tasks) {
-    localStorage.setItem(DB_NAME, JSON.stringify(tasks));
-    // Solicitar persistencia
-    if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist();
-    }
+  try {
+    localStorage.setItem('pwa-tasks-db-v2', JSON.stringify(tasks));
+    console.log('Tareas guardadas:', tasks); // Debug
+  } catch (error) {
+    console.error('Error al guardar:', error);
   }
+}
 
   function renderTasks() {
     const tasks = getTasks();
