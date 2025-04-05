@@ -3,46 +3,35 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CRUD de Tareas PWA</title>
-  <script src="app.js?v=20231130"></script>
-<link rel="stylesheet" href="style.css?v=20231130">
+  <title>CRUD Tareas PWA</title>
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#28a745">
+  <meta name="theme-color" content="#4CAF50">
 </head>
 <body>
   <div class="container">
-    <h1>📝 Mis Tareas</h1>
+    <h1>✅ CRUD Tareas PWA</h1>
     
     <form id="task-form">
-      <input type="text" id="task-input" placeholder="Escribe una tarea..." required>
+      <input type="text" id="task-input" placeholder="Nueva tarea..." required>
       <button type="submit" id="submit-btn">➕ Añadir</button>
     </form>
     
     <ul id="task-list"></ul>
   </div>
 
-  <script src="app.js?v=2"></script>
+  <script src="app.js?v=3"></script>
   <script>
-    // Registro mejorado del Service Worker
+    // Registro del Service Worker mejorado
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js', { scope: './' })
+        navigator.serviceWorker.register('/pwa-crud-tareas/sw.js', { scope: '/' })
           .then(reg => {
-            console.log('SW registrado con éxito:', reg);
+            console.log('SW registrado:', reg);
             reg.update();
-            // Forzar actualización inmediata
-            if (!navigator.serviceWorker.controller) {
-              window.location.reload();
-            }
           })
-          .catch(err => console.error('Error al registrar SW:', err));
+          .catch(err => console.error('Error SW:', err));
       });
-    }
-
-    // Verificar persistencia de almacenamiento
-    if (navigator.storage && navigator.storage.persist) {
-      navigator.storage.persist()
-        .then(granted => console.log('Persistencia:', granted ? 'Garantizada' : 'No garantizada'));
     }
   </script>
 </body>
