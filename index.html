@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>CRUD de Tareas PWA</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="style.css?v=3">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#28a745">
 </head>
@@ -20,14 +20,16 @@
     <ul id="task-list"></ul>
   </div>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=3"></script>
   <script>
-    // Registrar Service Worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('/pwa-crud-tareas/sw.js')
-          .then(registration => console.log('SW registrado!'))
-          .catch(err => console.log('Error al registrar SW: ', err));
+          .then(registration => {
+            console.log('SW registrado correctamente');
+            registration.update(); // Fuerza actualización del SW
+          })
+          .catch(err => console.error('Error al registrar SW:', err));
       });
     }
   </script>
