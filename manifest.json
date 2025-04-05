@@ -1,11 +1,12 @@
 {
-  "name": "CRUD de Tareas PWA",
+  "name": "Gestor de Tareas PWA",
   "short_name": "Tareas PWA",
-  "start_url": "/pwa-crud-tareas/index.html",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#28a745",
-  "description": "Aplicación CRUD de tareas con funcionalidad offline",
+  "description": "Aplicación para gestionar tareas con funcionalidad offline",
   "icons": [
     {
       "src": "icon-192.png",
@@ -25,7 +26,10 @@
       "src": "screenshot-desktop.png",
       "sizes": "1280x800",
       "type": "image/png",
-      "form_factor": "wide"
+      "form_factor": "wide",
+      "label": "Vista de escritorio"
     }
-  ]
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
 }
