@@ -1,57 +1,24 @@
-const CACHE_NAME = 'pwa-crud-ultimate-v1';
-const DYNAMIC_CACHE = 'dynamic-cache-v1';
+const CACHE_NAME = 'pwa-crud-final-v3';
 const ASSETS = [
-  './',
-  './index.html',
-  './style.css',
-  './app.js',
-  './manifest.json',
-  './icon.png'
+  '/pwa-crud-tareas/',
+  '/pwa-crud-tareas/index.html',
+  '/pwa-crud-tareas/style.css',
+  '/pwa-crud-tareas/app.js',
+  '/pwa-crud-tareas/manifest.json'
 ];
 
-// Instalación
 self.addEventListener('install', (e) => {
+  self.skipWaiting();
   e.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cacheando recursos esenciales');
-        return cache.addAll(ASSETS);
-      })
-      .then(() => self.skipWaiting())
-  );
+      .then(cache => cache.addAll(ASSETS))
 });
 
-// Activación
-self.addEventListener('activate', (e) => {
-  e.waitUntil(
-    caches.keys().then(keys => {
-      return Promise.all(
-        keys.filter(key => key !== CACHE_NAME && key !== DYNAMIC_CACHE)
-          .map(key => caches.delete(key))
-      );
-    }).then(() => self.clients.claim())
-  );
+self.addEventListener('activate', e => {
+  e.waitUntil(clients.claim());
 });
 
-// Estrategia de Fetch (Cache First, con fallback a network)
 self.addEventListener('fetch', (e) => {
-  // Excluir solicitudes de analytics o APIs externas
-  if (e.request.url.includes('google-analytics')) return;
-  
   e.respondWith(
-    caches.match(e.request).then(cachedResponse => {
-      // Devuelve la respuesta cacheada si existe
-      if (cachedResponse) return cachedResponse;
-      
-      // Si no está en caché, haz la petición a red
-      return fetch(e.request).then(response => {
-        // Clona la respuesta para almacenarla en caché
-        const responseToCache = response.clone();
-        
-        caches.open(DYNAMIC_CACHE).then(cache => {
-          cache.put(e.request, responseToCache);
-        });
-        
-        return response;
-      }).catch(() => {
-        // Fallback para pá
+    fetch(e.request).catch(() => caches.match(e.request))
+});
