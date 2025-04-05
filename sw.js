@@ -1,28 +1,27 @@
-const CACHE_NAME = 'pwa-crud-v4';
+const CACHE_NAME = 'pwa-crud-final-v1';
+const DYNAMIC_CACHE = 'dynamic-cache-v1';
 const ASSETS = [
-  '/pwa-crud-tareas/',
-  '/pwa-crud-tareas/index.html',
-  '/pwa-crud-tareas/style.css',
-  '/pwa-crud-tareas/app.js',
-  '/pwa-crud-tareas/manifest.json',
-  '/pwa-crud-tareas/icon.png'
+  './',
+  './index.html',
+  './style.css',
+  './app.js',
+  './manifest.json',
+  './icon.png'
 ];
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('Cacheando recursos estáticos');
-        return cache.addAll(ASSETS);
-      })
-      .catch(err => console.error('Error al cachear:', err))
+      .then(cache => cache.addAll(ASSETS))
+      .then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys().then(keys => {
       return Promise.all(
-        keys.filter(key => key !== CACHE_NAME)
+        keys.filter(key => key !== CACHE_NAME && key !== DYNAMIC_CACHE)
           .map(key => caches.delete(key))
       );
     })
@@ -31,6 +30,17 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   e.respondWith(
-    caches.match(e.request)
-      .then(res => res || fetch(e.request))
+    caches.match(e.request).then(cacheRes => {
+      return cacheRes || fetch(e.request).then(fetchRes => {
+        return caches.open(DYNAMIC_CACHE).then(cache => {
+          cache.put(e.request.url, fetchRes.clone());
+          return fetchRes;
+        });
+      });
+    }).catch(() => {
+      if (e.request.url.indexOf('.html') > -1) {
+        return caches.match('./index.html');
+      }
+    })
+  );
 });
